@@ -42,28 +42,32 @@ function Invitato() {
     };
   }, [codice]);
 
-  async function entra(numero) {
+    async function entra(numero) {
     if (!invitato) return;
 
     setLoading(true);
 
     const { data, error } = await supabase.rpc("incrementa_posti", {
-      id_invitato: invitato.id,
-      quanti: numero,
+        id_invitato: invitato.id,
+        quanti: numero,
     });
 
-    if (error || data === false) {
-      alert("Posti esauriti");
-    } else {
-      setSuccesso(true);
+    if (error) {
+        alert("Errore");
+    } else if (data === "NOT_FOUND") {
+        alert("Invitato non trovato");
+    } else if (data === "FULL") {
+        alert("Posti esauriti");
+    } else if (data === "OK") {
+        setSuccesso(true);
 
-      if (navigator.vibrate) navigator.vibrate(100);
+        if (navigator.vibrate) navigator.vibrate(100);
 
-      setTimeout(() => setSuccesso(false), 2500);
+        setTimeout(() => setSuccesso(false), 2500);
     }
 
     setLoading(false);
-  }
+    }
 
   if (!invitato) return <div>Caricamento...</div>;
 
