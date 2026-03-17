@@ -12,6 +12,15 @@ function Invitato() {
   const [isStaff, setIsStaff] = useState(
     sessionStorage.getItem("staff") === "1"
   );
+  const btn = {
+  margin: 5,
+  padding: 20,
+  fontSize: 18,
+  background: disponibili === 1 ? "orange" : "green",
+  color: "white",
+  border: "none",
+  borderRadius: 10,
+};
 
   useEffect(() => {
     fetchData();
@@ -24,12 +33,8 @@ function Invitato() {
     setLoading(false);
   }
 
-  async function handleEntra() {
-    console.log("CLICK BOTTONE");
-
-    const { data, error } = await entraInvitato(invitato.codice, 1);
-
-    console.log("RISPOSTA RPC:", data, error);
+  async function handleEntra(qta = 1) {
+    const { error } = await entraInvitato(invitato.codice, qta);
 
     if (error) {
       alert("Errore ingresso");
@@ -53,8 +58,10 @@ function Invitato() {
   if (loading) return <p>Caricamento...</p>;
   if (!invitato) return <p>Invitato non trovato</p>;
 
-  const disponibili =
-    invitato.posti_previsti - invitato.posti_usati;
+  const disponibili = Math.max(
+    0,
+    invitato.posti_previsti - invitato.posti_usati
+  );
 
   return (
     <div style={{ padding: 30, textAlign: "center" }}>
@@ -79,20 +86,32 @@ function Invitato() {
 
       {/* BOTTONI STAFF */}
       {isStaff && disponibili > 0 && (
-        <button
-          onClick={handleEntra}
-          style={{
-            marginTop: 20,
-            padding: 20,
-            fontSize: 20,
-            background: "green",
-            color: "white",
-            border: "none",
-            borderRadius: 10,
-          }}
-        >
-          +1 ENTRATA
-        </button>
+        <div style={{ marginTop: 20 }}>
+          <button
+            onClick={() => handleEntra(1)}
+            style={btn}
+          >
+            +1
+          </button>
+
+          {disponibili >= 2 && (
+            <button
+              onClick={() => handleEntra(2)}
+              style={btn}
+            >
+              +2
+            </button>
+          )}
+
+          {disponibili >= 3 && (
+            <button
+              onClick={() => handleEntra(disponibili)}
+              style={btn}
+            >
+              TUTTI ({disponibili})
+            </button>
+          )}
+        </div>
       )}
 
       {/* SBLOCCO STAFF */}
