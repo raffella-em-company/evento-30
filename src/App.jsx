@@ -1,15 +1,17 @@
-import { Routes, Route } from "react-router-dom";
-import Invitato from "./Invitato";
-import Admin from "./Admin";
-import Iscriviti from "./Iscriviti";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import Invitato from "./pages/Invitato";
+import Checkin from "./pages/Checkin";
+import Iscriviti from "./pages/Iscriviti";
 
 function App() {
   return (
-    <Routes>
-      <Route path="/e/:codice" element={<Invitato />} />
-      <Route path="/admin" element={<Admin />} />
-      <Route path="/iscriviti" element={<Iscriviti />} />
-    </Routes>
+    <BrowserRouter>
+      <Routes>
+        <Route path="/e/:codice" element={<Invitato />} />
+        <Route path="/checkin" element={<Checkin />} />
+        <Route path="/iscriviti" element={<Iscriviti />} />
+      </Routes>
+    </BrowserRouter>
   );
 }
 
