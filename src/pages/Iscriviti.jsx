@@ -60,19 +60,44 @@ function Iscriviti() {
     setLoading(false);
   }
 
-  // 📥 DOWNLOAD QR
-  function scaricaQR(link) {
+  //  DOWNLOAD QR
+  async function scaricaQR(link) {
     const url = `https://api.qrserver.com/v1/create-qr-code/?size=400x400&data=${link}`;
 
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = "qr-evento.png";
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
+    try {
+      const img = new Image();
+      img.crossOrigin = "anonymous";
+      img.src = url;
+
+      img.onload = () => {
+        const canvas = document.createElement("canvas");
+        canvas.width = img.width;
+        canvas.height = img.height;
+
+        const ctx = canvas.getContext("2d");
+        ctx.drawImage(img, 0, 0);
+
+        canvas.toBlob((blob) => {
+          const blobUrl = URL.createObjectURL(blob);
+
+          const a = document.createElement("a");
+          a.href = blobUrl;
+          a.download = "qr-evento.png";
+
+          document.body.appendChild(a);
+          a.click();
+          document.body.removeChild(a);
+
+          URL.revokeObjectURL(blobUrl);
+        });
+      };
+    } catch (err) {
+      console.error(err);
+      alert("Errore nel download");
+    }
   }
 
-  // 🎟️ DOPO REGISTRAZIONE
+  //  DOPO REGISTRAZIONE
   if (invitato) {
     const link = `https://evento-30.vercel.app/e/${invitato.codice}`;
     const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=${link}`;
