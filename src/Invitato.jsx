@@ -43,22 +43,22 @@ function Invitato() {
     };
   }, [codice]);
 
-  async function entra(numero) {
+    async function entra(numero) {
     if (!invitato) return;
 
     setLoading(true);
 
     const { data, error } = await supabase.rpc("incrementa_posti", {
-      id_invitato: invitato.id,
-      quanti: numero,
+        id_invitato: invitato.id,
+        quanti: numero,
     });
 
-    if (error || data === false) {
-      alert("Posti esauriti");
+    if (error) {
+        alert("Posti esauriti");
     }
 
     setLoading(false);
-  }
+    }
 
   if (!invitato) return <div>Caricamento...</div>;
 
