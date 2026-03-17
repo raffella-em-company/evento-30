@@ -1,6 +1,7 @@
 import { useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { getInvitato, entraInvitato } from "../services/invitati";
+import { supabase } from "../lib/supabase";
 
 function Invitato() {
   const { codice } = useParams();
@@ -12,6 +13,33 @@ function Invitato() {
   const [isStaff, setIsStaff] = useState(
     sessionStorage.getItem("staff") === "1"
   );
+
+  useEffect(() => {
+  if (!codice) return;
+
+  const channel = supabase
+    .channel("realtime-invitato")
+    .on(
+      "postgres_changes",
+      {
+        event: "UPDATE",
+        schema: "public",
+        table: "invitati",
+      },
+      (payload) => {
+        if (payload.new.codice === codice) {
+          console.log("🔄 aggiornamento realtime", payload.new);
+          setInvitato(payload.new);
+        }
+      }
+    )
+    .subscribe();
+
+  return () => {
+    supabase.removeChannel(channel);
+  };
+}, [codice]);
+
 
   useEffect(() => {
     fetchData();
