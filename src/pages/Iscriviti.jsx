@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { creaInvitato } from "../services/invitati";
+import { creaInvitato, esisteEmail, getInvitatoByEmail } from "../services/invitati";
 
 function Iscriviti() {
   const [form, setForm] = useState({
@@ -7,7 +7,6 @@ function Iscriviti() {
     cognome: "",
     email: "",
     tipo: "cliente",
-    accompagnatori: 1,
   });
 
   const [invitato, setInvitato] = useState(null);
@@ -18,7 +17,7 @@ function Iscriviti() {
 
     setForm((prev) => ({
       ...prev,
-      [name]: name === "accompagnatori" ? parseInt(value) : value,
+      [name]: value,
     }));
   }
 
@@ -26,11 +25,29 @@ function Iscriviti() {
     e.preventDefault();
     setLoading(true);
 
+    if (!form.nome || !form.cognome || !form.email) {
+      alert("Compila tutti i campi");
+      setLoading(false);
+      return;
+    }
+
+    const emailPulita = form.email.trim().toLowerCase();
+
+    const { data: esistente } = await esisteEmail(emailPulita);
+
+    if (esistente) {
+      const { data } = await getInvitatoByEmail(emailPulita);
+
+      setInvitato(data);
+      setLoading(false);
+      return;
+    }
+
     const { data, error } = await creaInvitato({
       nome: `${form.nome} ${form.cognome}`,
-      email: form.email,
+      email: emailPulita,
       tipo: form.tipo,
-      posti_previsti: form.accompagnatori,
+      posti_previsti: 1,
     });
 
     if (error) {
@@ -80,17 +97,6 @@ function Iscriviti() {
           <option value="fornitore">Fornitore</option>
           <option value="dipendente">Dipendente</option>
         </select>
-
-        <br /><br />
-
-        <input
-          name="accompagnatori"
-          type="number"
-          min="1"
-          max="10"
-          defaultValue={1}
-          onChange={handleChange}
-        />
 
         <br /><br />
 

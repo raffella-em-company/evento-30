@@ -22,3 +22,17 @@ export async function creaInvitato(payload) {
     .select()
     .single();
 }
+export async function esisteEmail(email) {
+  return await supabase
+    .from("invitati")
+    .select("id")
+    .eq("email", email)
+    .maybeSingle();
+}
+export async function getInvitatoByEmail(email) {
+  return await supabase
+    .from("invitati")
+    .select("*")
+    .eq("email", email)
+    .single();
+}
