@@ -8,6 +8,13 @@ export async function getInvitato(codice) {
     .single();
 }
 
+export async function getListaInvitati() {
+  return await supabase
+    .from("invitati")
+    .select("*")
+    .order("nome");
+}
+
 export async function entraInvitato(codice, qta = 1) {
   return await supabase.rpc("incrementa_posti", {
     codice_input: codice,
