@@ -1,46 +1,45 @@
-import { useEffect, useState } from "react";
-import { getListaInvitati, entraInvitato } from "../services/invitati";
+import { useState } from "react";
+import { getInvitato, entraInvitato } from "../services/invitati";
 
 function Checkin() {
-  const [invitati, setInvitati] = useState([]);
+  const [codice, setCodice] = useState("");
+  const [invitato, setInvitato] = useState(null);
 
-  useEffect(() => {
-    load();
-  }, []);
-
-  async function load() {
-    const { data } = await getListaInvitati();
-    setInvitati(data || []);
+  async function cerca() {
+    const { data } = await getInvitato(codice);
+    setInvitato(data);
   }
 
-  async function handleEntra(codice) {
+  async function entra() {
     await entraInvitato(codice, 1);
-    await load();
+
+    const { data } = await getInvitato(codice);
+    setInvitato(data);
   }
 
   return (
     <div style={{ padding: 40 }}>
       <h1>Check-in</h1>
 
-      {invitati.map((inv) => {
-        const disponibili = inv.posti_previsti - inv.posti_usati;
+      <input
+        placeholder="Scansiona o inserisci codice"
+        value={codice}
+        onChange={(e) => setCodice(e.target.value)}
+      />
 
-        return (
-          <div key={inv.id} style={{ marginBottom: 20 }}>
-            <h3>{inv.nome}</h3>
+      <button onClick={cerca}>Cerca</button>
 
-            <p>
-              {inv.posti_usati}/{inv.posti_previsti}
-            </p>
+      {invitato && (
+        <div style={{ marginTop: 30 }}>
+          <h2>{invitato.nome}</h2>
 
-            {disponibili > 0 && (
-              <button onClick={() => handleEntra(inv.codice)}>
-                Entra 1
-              </button>
-            )}
-          </div>
-        );
-      })}
+          <p>
+            {invitato.posti_usati}/{invitato.posti_previsti}
+          </p>
+
+          <button onClick={entra}>+1 Entrata</button>
+        </div>
+      )}
     </div>
   );
 }

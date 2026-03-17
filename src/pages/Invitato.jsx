@@ -30,6 +30,9 @@ function Invitato() {
       <p>
         {invitato.posti_usati} / {invitato.posti_previsti}
       </p>
+      <p style={{ fontSize: 20, fontWeight: "bold" }}>
+        {disponibili > 0 ? "Accesso consentito" : "Accesso esaurito"}
+      </p>
 
       {disponibili > 0 ? (
         <p style={{ color: "green" }}>Posti disponibili</p>
