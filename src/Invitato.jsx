@@ -53,23 +53,29 @@ function Invitato() {
 
       <h2>Disponibili: {disponibili}</h2>
 
-      {disponibili > 0 ? (
+        {disponibili > 0 ? (
         <>
-          <button onClick={() => entra(1)} disabled={loading}>
-            Entra 1
-          </button>
+            {disponibili >= 1 && (
+            <button onClick={() => entra(1)} disabled={loading}>
+                Entra 1
+            </button>
+            )}
 
-          <button onClick={() => entra(2)} disabled={loading}>
-            Entra 2
-          </button>
+            {disponibili >= 2 && (
+            <button onClick={() => entra(2)} disabled={loading}>
+                Entra 2
+            </button>
+            )}
 
-          <button onClick={() => entra(3)} disabled={loading}>
-            Entra 3
-          </button>
+            {disponibili >= 3 && (
+            <button onClick={() => entra(3)} disabled={loading}>
+                Entra 3
+            </button>
+            )}
         </>
-      ) : (
+        ) : (
         <h2 style={{ color: "red" }}>COMPLETO</h2>
-      )}
+        )}
     </div>
   );
 }
