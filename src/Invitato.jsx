@@ -59,7 +59,7 @@ function Invitato() {
 
       if (navigator.vibrate) navigator.vibrate(100);
 
-      setTimeout(() => setSuccesso(false), 1000);
+      setTimeout(() => setSuccesso(false), 2500);
     }
 
     setLoading(false);
