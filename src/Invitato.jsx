@@ -7,6 +7,14 @@ function Invitato() {
   const [invitato, setInvitato] = useState(null);
   const [loading, setLoading] = useState(false);
   const [successo, setSuccesso] = useState(false);
+  const isStaff = false; // temporaneo
+
+  {isStaff && disponibili > 0 && (
+  <>
+    <button onClick={() => entra(1)}>Entra 1</button>
+    ...
+  </>
+)}
 
   async function fetchInvitato() {
     const { data, error } = await supabase
