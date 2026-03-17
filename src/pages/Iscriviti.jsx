@@ -15,6 +15,7 @@ function Iscriviti() {
 
   const [invitato, setInvitato] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [giaRegistrato, setGiaRegistrato] = useState(false);
 
   function handleChange(e) {
     const { name, value } = e.target;
@@ -38,6 +39,7 @@ function Iscriviti() {
     if (esistente) {
       const { data } = await getInvitatoByEmail(emailPulita);
       setInvitato(data);
+      setGiaRegistrato(true);
       setLoading(false);
       return;
     }
@@ -58,26 +60,60 @@ function Iscriviti() {
     setLoading(false);
   }
 
+  // 📥 DOWNLOAD QR
+  function scaricaQR(link) {
+    const url = `https://api.qrserver.com/v1/create-qr-code/?size=400x400&data=${link}`;
+
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "qr-evento.png";
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+  }
+
   // 🎟️ DOPO REGISTRAZIONE
   if (invitato) {
     const link = `https://evento-30.vercel.app/e/${invitato.codice}`;
+    const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=${link}`;
 
     return (
       <div style={wrap}>
         <div style={card}>
-          <h1 style={title}>Registrazione completata</h1>
+          <h1 style={title}>
+            {giaRegistrato ? "Sei già registrato" : "Registrazione completata"}
+          </h1>
 
           <p style={subtitle}>{invitato.nome}</p>
 
           <img
             style={{ margin: "20px 0" }}
-            src={`https://api.qrserver.com/v1/create-qr-code/?size=220x220&data=${link}`}
+            src={qrUrl}
             alt="QR"
           />
 
           <p style={{ fontSize: 14, opacity: 0.7 }}>
             Mostra questo QR all’ingresso
           </p>
+
+          {/* BOTTONI */}
+          <div style={{ marginTop: 20 }}>
+            <button
+              onClick={() => scaricaQR(link)}
+              style={buttonSecondary}
+            >
+              Scarica QR
+            </button>
+
+            <a
+              href={link}
+              target="_blank"
+              rel="noreferrer"
+              style={linkStyle}
+            >
+              Apri QR a schermo intero
+            </a>
+          </div>
         </div>
       </div>
     );
@@ -185,4 +221,23 @@ const button = {
   borderRadius: 8,
   fontSize: 16,
   cursor: "pointer",
+};
+
+const buttonSecondary = {
+  width: "100%",
+  padding: 12,
+  background: "#222",
+  color: "white",
+  border: "none",
+  borderRadius: 8,
+  fontSize: 14,
+  cursor: "pointer",
+};
+
+const linkStyle = {
+  display: "block",
+  marginTop: 10,
+  fontSize: 13,
+  color: "#555",
+  textDecoration: "underline",
 };
