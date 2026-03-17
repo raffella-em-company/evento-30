@@ -8,19 +8,10 @@ function Invitato() {
   const [invitato, setInvitato] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  // 🔐 staff mode
+  //  staff mode persistente
   const [isStaff, setIsStaff] = useState(
     sessionStorage.getItem("staff") === "1"
   );
-  const btn = {
-  margin: 5,
-  padding: 20,
-  fontSize: 18,
-  background: disponibili === 1 ? "orange" : "green",
-  color: "white",
-  border: "none",
-  borderRadius: 10,
-};
 
   useEffect(() => {
     fetchData();
@@ -53,15 +44,27 @@ function Invitato() {
     } else {
       alert("Password errata");
     }
-}
+  }
 
   if (loading) return <p>Caricamento...</p>;
   if (!invitato) return <p>Invitato non trovato</p>;
 
+  //  calcolo posti disponibili (sicuro)
   const disponibili = Math.max(
     0,
     invitato.posti_previsti - invitato.posti_usati
   );
+
+  //  stile base bottone
+  const btn = {
+    margin: 5,
+    padding: 20,
+    fontSize: 18,
+    color: "white",
+    border: "none",
+    borderRadius: 10,
+    cursor: "pointer",
+  };
 
   return (
     <div style={{ padding: 30, textAlign: "center" }}>
@@ -89,7 +92,10 @@ function Invitato() {
         <div style={{ marginTop: 20 }}>
           <button
             onClick={() => handleEntra(1)}
-            style={btn}
+            style={{
+              ...btn,
+              background: disponibili === 1 ? "orange" : "green",
+            }}
           >
             +1
           </button>
@@ -97,7 +103,7 @@ function Invitato() {
           {disponibili >= 2 && (
             <button
               onClick={() => handleEntra(2)}
-              style={btn}
+              style={{ ...btn, background: "green" }}
             >
               +2
             </button>
@@ -106,7 +112,7 @@ function Invitato() {
           {disponibili >= 3 && (
             <button
               onClick={() => handleEntra(disponibili)}
-              style={btn}
+              style={{ ...btn, background: "#222" }}
             >
               TUTTI ({disponibili})
             </button>
