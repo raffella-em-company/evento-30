@@ -25,7 +25,17 @@ function Invitato() {
   }
 
   async function handleEntra() {
-    await entraInvitato(invitato.codice, 1);
+    console.log("CLICK BOTTONE");
+
+    const { data, error } = await entraInvitato(invitato.codice, 1);
+
+    console.log("RISPOSTA RPC:", data, error);
+
+    if (error) {
+      alert("Errore ingresso");
+      return;
+    }
+
     fetchData();
   }
 
@@ -38,7 +48,7 @@ function Invitato() {
     } else {
       alert("Password errata");
     }
-  }
+}
 
   if (loading) return <p>Caricamento...</p>;
   if (!invitato) return <p>Invitato non trovato</p>;
