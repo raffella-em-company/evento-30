@@ -6,6 +6,7 @@ function Invitato() {
   const { codice } = useParams();
   const [invitato, setInvitato] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [successo, setSuccesso] = useState(false);
 
   async function fetchInvitato() {
     const { data, error } = await supabase
@@ -14,9 +15,7 @@ function Invitato() {
       .eq("codice", codice)
       .single();
 
-    if (!error) {
-      setInvitato(data);
-    }
+    if (!error) setInvitato(data);
   }
 
   useEffect(() => {
@@ -43,29 +42,39 @@ function Invitato() {
     };
   }, [codice]);
 
-    async function entra(numero) {
+  async function entra(numero) {
     if (!invitato) return;
 
     setLoading(true);
 
     const { data, error } = await supabase.rpc("incrementa_posti", {
-        id_invitato: invitato.id,
-        quanti: numero,
+      id_invitato: invitato.id,
+      quanti: numero,
     });
 
-    if (error) {
-        alert("Posti esauriti");
+    if (error || data === false) {
+      alert("Posti esauriti");
+    } else {
+      setSuccesso(true);
+
+      if (navigator.vibrate) navigator.vibrate(100);
+
+      setTimeout(() => setSuccesso(false), 1000);
     }
 
     setLoading(false);
-    }
+  }
 
   if (!invitato) return <div>Caricamento...</div>;
 
   const disponibili =
     invitato.posti_previsti - invitato.posti_usati;
 
-  const puòEntrare = (numero) => disponibili >= numero;
+  // 🔥 BOTTONI DINAMICI
+  const opzioni = Array.from(
+    { length: disponibili },
+    (_, i) => i + 1
+  );
 
   return (
     <div style={{ padding: 40 }}>
@@ -73,35 +82,40 @@ function Invitato() {
 
       <h2>Disponibili: {disponibili}</h2>
 
+      {successo && (
+        <div
+          style={{
+            background: "#00c853",
+            color: "white",
+            padding: "20px",
+            fontSize: "24px",
+            textAlign: "center",
+            marginBottom: "20px",
+            borderRadius: "8px",
+          }}
+        >
+          ✔ INGRESSO REGISTRATO
+        </div>
+      )}
+
       {disponibili > 0 ? (
-        <>
-          {puòEntrare(1) && (
+        <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
+          {opzioni.map((n) => (
             <button
-              onClick={() => entra(1)}
+              key={n}
+              onClick={() => entra(n)}
               disabled={loading}
+              style={{
+                padding: "15px 20px",
+                fontSize: "18px",
+                borderRadius: "8px",
+                cursor: "pointer",
+              }}
             >
-              Entra 1
+              Entra {n}
             </button>
-          )}
-
-          {puòEntrare(2) && (
-            <button
-              onClick={() => entra(2)}
-              disabled={loading}
-            >
-              Entra 2
-            </button>
-          )}
-
-          {puòEntrare(3) && (
-            <button
-              onClick={() => entra(3)}
-              disabled={loading}
-            >
-              Entra 3
-            </button>
-          )}
-        </>
+          ))}
+        </div>
       ) : (
         <h2 style={{ color: "red" }}>COMPLETO</h2>
       )}
