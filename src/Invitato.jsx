@@ -21,26 +21,23 @@ function Invitato() {
     fetchInvitato();
   }, [codice]);
 
-  async function entra(numero) {
+    async function entra(numero) {
     if (!invitato) return;
-
-    const nuoviUsati = invitato.posti_usati + numero;
-
-    if (nuoviUsati > invitato.posti_previsti) {
-      alert("Posti esauriti");
-      return;
-    }
 
     setLoading(true);
 
-    await supabase
-      .from("invitati")
-      .update({ posti_usati: nuoviUsati })
-      .eq("id", invitato.id);
+    const { error } = await supabase.rpc("incrementa_posti", {
+        id_invitato: invitato.id,
+        quanti: numero,
+    });
+
+    if (error) {
+        alert("Errore ingresso");
+    }
 
     await fetchInvitato();
     setLoading(false);
-  }
+    }
 
   if (!invitato) return <div>Caricamento...</div>;
 
