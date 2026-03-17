@@ -5,20 +5,17 @@ function Checkin() {
   const [invitati, setInvitati] = useState([]);
 
   useEffect(() => {
-    async function load() {
-      const { data } = await getListaInvitati();
-      setInvitati(data || []);
-    }
-
     load();
   }, []);
 
-  async function handleEntra(codice) {
-    await entraInvitato(codice, 1);
-
-    // refresh
+  async function load() {
     const { data } = await getListaInvitati();
     setInvitati(data || []);
+  }
+
+  async function handleEntra(codice) {
+    await entraInvitato(codice, 1);
+    await load();
   }
 
   return (
@@ -31,6 +28,7 @@ function Checkin() {
         return (
           <div key={inv.id} style={{ marginBottom: 20 }}>
             <h3>{inv.nome}</h3>
+
             <p>
               {inv.posti_usati}/{inv.posti_previsti}
             </p>

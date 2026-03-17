@@ -21,3 +21,11 @@ export async function entraInvitato(codice, qta = 1) {
     qta_input: qta
   });
 }
+
+export async function creaInvitato(payload) {
+  return await supabase
+    .from("invitati")
+    .insert([payload])
+    .select()
+    .single();
+}

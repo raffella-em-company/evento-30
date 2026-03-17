@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { supabase } from "./lib/supabase";
+import { creaInvitato } from "../services/invitati";
 
 function Iscriviti() {
   const [form, setForm] = useState({
@@ -15,6 +15,7 @@ function Iscriviti() {
 
   function handleChange(e) {
     const { name, value } = e.target;
+
     setForm((prev) => ({
       ...prev,
       [name]: name === "accompagnatori" ? parseInt(value) : value,
@@ -23,21 +24,14 @@ function Iscriviti() {
 
   async function handleSubmit(e) {
     e.preventDefault();
-
     setLoading(true);
 
-    const { data, error } = await supabase
-      .from("invitati")
-      .insert([
-        {
-          nome: `${form.nome} ${form.cognome}`,
-          email: form.email,
-          tipo: form.tipo,
-          posti_previsti: form.accompagnatori,
-        },
-      ])
-      .select()
-      .single();
+    const { data, error } = await creaInvitato({
+      nome: `${form.nome} ${form.cognome}`,
+      email: form.email,
+      tipo: form.tipo,
+      posti_previsti: form.accompagnatori,
+    });
 
     if (error) {
       alert("Errore registrazione");
@@ -48,7 +42,6 @@ function Iscriviti() {
     setLoading(false);
   }
 
-  // 🔥 SE REGISTRATO → MOSTRA QR
   if (invitato) {
     const link = `https://evento-30.vercel.app/e/${invitato.codice}`;
 
@@ -73,32 +66,13 @@ function Iscriviti() {
       <h1>Registrazione Evento</h1>
 
       <form onSubmit={handleSubmit}>
-        <input
-          name="nome"
-          placeholder="Nome"
-          onChange={handleChange}
-          required
-        />
-
+        <input name="nome" placeholder="Nome" onChange={handleChange} required />
         <br /><br />
 
-        <input
-          name="cognome"
-          placeholder="Cognome"
-          onChange={handleChange}
-          required
-        />
-
+        <input name="cognome" placeholder="Cognome" onChange={handleChange} required />
         <br /><br />
 
-        <input
-          name="email"
-          placeholder="Email"
-          type="email"
-          onChange={handleChange}
-          required
-        />
-
+        <input name="email" type="email" placeholder="Email" onChange={handleChange} required />
         <br /><br />
 
         <select name="tipo" onChange={handleChange}>

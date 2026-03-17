@@ -26,14 +26,15 @@ function Invitato() {
   return (
     <div style={{ padding: 30 }}>
       <h1>{invitato.nome}</h1>
+
       <p>
-        Posti: {invitato.posti_usati} / {invitato.posti_previsti}
+        {invitato.posti_usati} / {invitato.posti_previsti}
       </p>
 
       {disponibili > 0 ? (
         <p style={{ color: "green" }}>Posti disponibili</p>
       ) : (
-        <p style={{ color: "red" }}>Evento pieno</p>
+        <p style={{ color: "red" }}>Completo</p>
       )}
     </div>
   );
